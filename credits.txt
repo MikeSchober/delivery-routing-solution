@@ -1,0 +1,9 @@
+credits for resources used...
+
+---icons:
+https://ionic.io/ionicons
+
+---map:
+https://leafletjs.com/
+
+

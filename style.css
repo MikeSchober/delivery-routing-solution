@@ -1,0 +1,40 @@
+/*universal selector*/
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+html {
+    background-image: linear-gradient(to bottom right, #74cba2, white);
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100%;
+    width: auto;
+}
+
+.map {
+    margin: auto;
+    height: 500px;
+    width: 500px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .togglebuttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
+button {
+    color: black;
+}
+
+.buttonSelected {
+    background-color: black;
+    color: white;
+}
