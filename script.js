@@ -847,6 +847,8 @@ function getSolution(trks) {
                     currObj = nextObj;
 
                 };
+                //to write function for this... need currObj (loc object from which we are routing to the next closest loc obj) and locsleft (array of loc objs remaining) args... also need first stop---first stop would be beginning currObj (where you want to start the closest-closest sequence)
+                //function would sequence closest-closest, returning an array of sequenced objs, which could then be combined with the spread operator before and after the extreme loc is added in???
 
                 //adding the depot as the last item in the sequence array... sequencedStops holds loc objs
                 sequencedStops.push(locs[0]);
@@ -862,21 +864,27 @@ function getSolution(trks) {
                 //array or arrays... each index in the parent array is an array of loc objects sequenced as a psbl solution
                 let solCont = [];
 
+                /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
+                //write abstraction for closest-closest???
+
                 /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... thinking array of solutions*/
-                for (let y = 0; y <= ext; y++) {
+                for (let y = 0; y < ext; y++) {
 
                     //variable to copy sequencedStops array so that we can reset the sequence to the orig sequencedStops array in each iteration of the for loop
-                    let s = [...[sequencedStops]]
+                    let s = [...sequencedStops]
 
                     //scaffolding...
                     console.log(`copy of sequencedStops follows this`);
                     console.log(s);
 
                     //adding the most extreme north loc to the sequencedStops array
-                    s.splice(y, 0, mostNorth);
+                    s.splice((y + 1), 0, mostNorth);
 
                     //scaffolding...
                     console.log(`checking length: ${s.length}`);
+                    console.log(`s follows this...`);
+                    console.log(s);
+
 
                     //pushes the current solution array to solCont
                     solCont.push(s);
@@ -887,16 +895,18 @@ function getSolution(trks) {
                 console.log(`index of most extreme loc: ${ext}`);
                 console.log(`index number abv should match this number: ${(solCont.length - 1)}`);
                 console.log(`solution container number ${u}: ${solCont}`);
-                console.log(`solution container index 0: ${solCont[0]}`);
+                console.log(`solCont[3] follows this:`);
+                console.log(solCont[3]);
 
                 /*--------------------------------------------------
                 END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
                 */
 
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
-                for (let l in sequencedStops) {
+                //changed this to currently only draw the first solution in the solCont sequence array. this code is changing anyway bc the routing is incorrect
+                for (let l in solCont[0]) {
 
-                    sequencedLocations.push(sequencedStops[l].loc)
+                    sequencedLocations.push(solCont[0][l].loc)
 
                 };
 
