@@ -1,6 +1,13 @@
 'use strict';
 
-//start at code line 936 next!!!
+//start at code line 850 and 981 to add sequencing for the extreme points into the srequencedStops array!!!
+///start at code line 853... troubleshoot the sequences!!!
+//---right now, the most extreme points are spliced out of the sequencedStops array for both WE and NS solutions... need to run sequences for them for them in index zero through their natural index in the closest-closest solution, storing each in its own solution array, then need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array
+//-----next steps...
+//-----write logic to sequence the extreme loc and to hold all the different solutions (array to hold all solutions??? array or arrays, each index of the parent array would hold an array of the sequenced loc objects)
+//write logic to determine total distance along a given route (can use getDist(origin, destination) for each segment of each solution to get the total distance)... remember, getDist takes arrays as args ([lat, long], [lat, long]) so need to take the locObj.loc and pass it in as arg
+//-----will likely need to create an array of total distances that correspond to the solutions parent array (index0 of distance array woudl be total distance for the solutions parent array index 0, etc.)
+//write logic to compare all solutions and to draw/pass-in the solution the solutionOne map (index of the lowest number in the solutions distance array SHOULD be the best solution)
 
 //global variable to hold user's current position
 //defaults to KC, MO
@@ -67,6 +74,7 @@ let sequencedLocations = [];
 
 
 //variables to hold solutions
+//solutionOne tol hold only the best sequence, once determined, after sequencing gthe extreme points and calculating distance
 let solutionOne = new Map();
 
 let solutionTwo = new Map();
@@ -266,7 +274,7 @@ function findLowest(inputArray) {
 //returns the highest number in the array that's greater than zero
 function findHighest(inputArray) {
 
-    //variable to hold the lowest number
+    //variable to hold the highest number
     let highest = 0;
 
     //iterates through the array and keeps lowest number in the variable
@@ -341,6 +349,91 @@ function nextClosest(currentLoc, locsRemaining) {
 }
 
 //problem here... this always finds the closest loc object to the object that is given, even if it's the depot or another object that we already sequenced...fixed!!! now finds the next closest object among only the objects that are remaining!!!
+
+
+
+//will need to add code here to find the directional extreme (north or west) in the locsleft array
+
+//function to take an array of loc objects and find the most extreme north latitude... then return the most extreme north object
+function extNorth(locarr) {
+
+    ////remember... south latitudes and west longitudes are negative!!!
+    //this one is N and W... [39.099724, -94.578331];
+    //[lat, long]
+    //so... we want the highest positive number in index zero of loc object loc property
+
+    //using the findHighest(array) function to find the highest number in the array of latitudes that we take from the passed-in locarr
+
+    //variable to hold array of latitudes
+    let lats = [];
+
+    //iterating through the passed-in locarr to create an array of all the latitudes
+    for (let l in locarr) {
+
+        //pushes the latitude for each loc object from the locarr into the lats array
+        lats.push(locarr[l].loc[0]);
+
+    };
+
+    //scaffolding...
+    console.log(`lats: ${lats}`);
+
+    //finds the most extreme north latitude in the array of lats
+    let highest = findHighest(lats);
+
+    //finding the index of the extreme loc in the locarr... bc lats is in the same order as the objs in locarr, the index found here from lats will correspond to the correct obj in locarr 
+    let highInd = lats.indexOf(highest);
+
+    console.log(highInd);
+
+    //returns the loc object with the most northern latitude from locarr
+    console.log(`loc obj: ${locarr[highInd]}`);
+    return locarr[highInd];
+
+};
+
+
+//function to take an array of loc objects and find the most extreme west longitude
+function extWest(locarr) {
+
+    ////remember... south latitudes and west longitudes are negative!!!
+    //this one is N and W... [39.099724, -94.578331];
+    //[lat, long]
+
+    //so... we want the highest negative number in index one of loc object loc property
+
+    //using the findHighest(array) function to find the lowest negative value number in the array of longitudes that we take from the passed-in locarr
+    //to do this... since west longs are negative, multiplying all by -1 so that we can use findHighest(array) function to find the correct number
+
+    //variable to hold array of longitudes
+    //remember... these are opposite sign from what they actually are... west longs are now positive, east now negative!!!
+    let longs = [];
+
+    //iterating through the passed-in locarr to create an array of all the longitudes
+    for (let l in locarr) {
+
+        //pushes the longitude for each loc object from the locarr into the longs array
+        longs.push((locarr[l].loc[1]) * -1);
+
+    };
+
+    //scaffolding...
+    console.log(`longs: ${longs}`);
+
+    //finds the most extreme west longitude in the array of longs
+    let lowest = findHighest(longs);
+
+    //finding the index of the extreme loc in the locarr... bc longs is in the same order as the objs in locarr, the index found here from longs will correspond to the correct obj in locarr 
+    let highInd = longs.indexOf(lowest);
+
+    console.log(highInd);
+
+    //returns the loc object with the most western longitude from locarr
+    console.log(`loc obj: ${locarr[highInd]}`);
+    return locarr[highInd];
+
+
+};
 
 
 ///////
@@ -647,7 +740,7 @@ function getSolution(trks) {
         //add truck one sequence to the solutionOne map
         //first key is truck number (number data type), value is array of sequenced locations [lat, long] for printing to the UI map view
         //second key is truck number in string form, value is array of sequenced loc objects
-        solutionOne.set(1, sequencedLocations).set(`truck1`, sequencedStops);
+        solutionOne.set(0, sequencedLocations).set(`truck0`, sequencedStops);
 
 
         //code abv sequences stops from closest to closest for one truck only
@@ -726,8 +819,16 @@ function getSolution(trks) {
                 //adding the depot as the first item in the sequence array
                 sequencedStops.push(locs[0]);
 
-                //will need to add code here to put the directional extreme (north or west) as second loc object in the sequence array
-                //---thought here is that we need to use directional logic, then closest logic within each section. start at directional extreme (north or west), then go closest-closest from there
+                //will need to add code here to find the directional extreme north in the locsleft array
+                //function here finds the most extreme loc and returns the associated loc object... variable here holds the extreme loc obj
+                let mostNorth = extNorth(locsLeft);
+
+
+                //will then let the original closest-closest code run to determine the natural closest-closest order, then will use sequencedStops.indexOf(mostWest) to determine at which index the most extreme loc sits, then will remove it from the sequence with splice as we did below for the nextOjb, then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... map???
+
+
+                //---thought here is that we need to use directional logic with closest logic... closest-closest to find which index the extreme loc is in the sequence, then running sequences with the extreme at index zero through its natural index in the closest-closest sequence
+
 
 
                 //this code below here is the closest-closest code...
@@ -747,8 +848,50 @@ function getSolution(trks) {
 
                 };
 
-                //adding the depot as the last item in the sequence array
+                //adding the depot as the last item in the sequence array... sequencedStops holds loc objs
                 sequencedStops.push(locs[0]);
+
+                /*--------------------------------------------------
+                ADDED CODE HERE TO SEQUENCE THE MOST EXTREME LOC
+                */
+                //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
+                let ext = sequencedStops.indexOf(mostNorth);
+                sequencedStops.splice(ext, 1);
+
+                //variable to hold all the different solution sequences
+                //array or arrays... each index in the parent array is an array of loc objects sequenced as a psbl solution
+                let solCont = [];
+
+                /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... thinking array of solutions*/
+                for (let y = 0; y <= ext; y++) {
+
+                    //variable to copy sequencedStops array so that we can reset the sequence to the orig sequencedStops array in each iteration of the for loop
+                    let s = [...[sequencedStops]]
+
+                    //scaffolding...
+                    console.log(`copy of sequencedStops follows this`);
+                    console.log(s);
+
+                    //adding the most extreme north loc to the sequencedStops array
+                    s.splice(y, 0, mostNorth);
+
+                    //scaffolding...
+                    console.log(`checking length: ${s.length}`);
+
+                    //pushes the current solution array to solCont
+                    solCont.push(s);
+
+                }
+
+                //scaffolding... to show the solution container in each iteration (east and west)
+                console.log(`index of most extreme loc: ${ext}`);
+                console.log(`index number abv should match this number: ${(solCont.length - 1)}`);
+                console.log(`solution container number ${u}: ${solCont}`);
+                console.log(`solution container index 0: ${solCont[0]}`);
+
+                /*--------------------------------------------------
+                END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
+                */
 
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
                 for (let l in sequencedStops) {
@@ -841,8 +984,15 @@ function getSolution(trks) {
                 //adding the depot as the first item in the sequence array
                 sequencedStops.push(locs[0]);
 
-                //will need to add code here to put the directional extreme (north or west) as second loc object in the sequence array
-                //---thought here is that we need to use directional logic, then closest logic within each section. start at directional extreme (north or west), then go closest-closest from there
+
+                //will need to add code here to find the directional extreme west in the locsleft array
+                //function here finds the most extreme loc and returns the associated loc object... variable here holds the extreme loc obj
+                let mostWest = extWest(locsLeft);
+
+                //will then let the original closest-closest code run to determine the natural closest-closest order, then will use sequencedStops.indexOf(extremLoc) to determine at which index the most extreme loc sits, then will remove it from the sequence with splice as we did below for the nextOjb, then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... map???
+
+
+                //---thought here is that we need to use directional logic with closest logic... closest-closest to find which index the extreme loc is in the sequence, then running sequences with the extreme at index zero through its natural index in the closest-closest sequence
 
 
                 //this code below here is the closest-closest code...
@@ -864,6 +1014,14 @@ function getSolution(trks) {
 
                 //adding the depot as the last item in the sequence array
                 sequencedStops.push(locs[0]);
+
+
+                //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
+                let ext = sequencedStops.indexOf(mostWest);
+                sequencedStops.splice(ext, 1);
+
+                /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... map???*/
+
 
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
                 for (let l in sequencedStops) {
