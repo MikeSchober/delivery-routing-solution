@@ -435,6 +435,53 @@ function extWest(locarr) {
 
 };
 
+////////////////////////////////////
+//beg of close-close routing abstraction... might need to delete
+
+
+//function to abstract the closest-closest routing
+//start = loc object from which we want to start our routing
+//remain = array of loc objects that remain to be sequenced
+//nums = number of objects from the passed-in remaing array that we want to sequence
+//returns an array of sequenced objs and remaining objs
+//return = [[sequenced objs], [remaining objs]]
+//so... of what;s returned, index zero is the sequence, index one is the array of remainging objs to be sequenced later
+function closeClose(start, remain, nums) {
+
+    //setting default value for nums if nothing passed-in for it
+    if (nums === undefined) {
+        nums = (remain.length)
+    }
+
+    //variable to hold array that will be returned
+    let seq = [];
+
+    for (let x = 0; x < nums; x++) {
+        //finds next closest object next object in the sequences
+        let nextObj = nextClosest(start, remain);
+
+        //code to remove currectObj from the array of loc objects remaining
+        let removeIndex = remain.indexOf(nextObj);
+        remain.splice(removeIndex, 1);
+
+        //scaffolding...
+        console.log(`closeClose sector length: ${remain.length}`);
+
+        seq.push(nextObj);
+        start = nextObj;
+    }
+
+    return [seq, remain]
+
+};
+
+//to write function for this... need currObj (loc object from which we are routing to the next closest loc obj) and locsleft (array of loc objs remaining) args...
+//function would sequence closest-closest, returning an array of sequenced objs, which could then be combined with the spread operator before and after the extreme loc is added in???
+
+//end of closeClose function... abstraction for close-close routing
+////////////////////////
+
+
 
 ///////
 
