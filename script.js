@@ -1,5 +1,7 @@
 'use strict';
 
+//start at CL 922 to work on the sequencedStops array and make sure that the spliced version impacts closeClose function!!!
+
 //start at code line 850 and 981 to add sequencing for the extreme points into the srequencedStops array!!!
 ///start at code line 853... troubleshoot the sequences!!!
 //---right now, the most extreme points are spliced out of the sequencedStops array for both WE and NS solutions... need to run sequences for them for them in index zero through their natural index in the closest-closest solution, storing each in its own solution array, then need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array
@@ -448,32 +450,39 @@ function extWest(locarr) {
 //so... of what;s returned, index zero is the sequence, index one is the array of remainging objs to be sequenced later
 function closeClose(start, remain, nums) {
 
+    //variable to hold copy of remain
+    let r = [...remain]
+
+    //variable to hold start value
+    let s = start;
+
     //setting default value for nums if nothing passed-in for it
     if (nums === undefined) {
-        nums = (remain.length)
+        nums = (r.length)
     }
 
     //variable to hold array that will be returned
-    let seq = [];
+    let seq = [s];
 
     for (let x = 0; x < nums; x++) {
         //finds next closest object next object in the sequences
-        let nextObj = nextClosest(start, remain);
+        let nextObj = nextClosest(s, r);
 
         //code to remove currectObj from the array of loc objects remaining
-        let removeIndex = remain.indexOf(nextObj);
-        remain.splice(removeIndex, 1);
+        let removeIndex = r.indexOf(nextObj);
+        r.splice(removeIndex, 1);
 
         //scaffolding...
-        console.log(`closeClose sector length: ${remain.length}`);
+        console.log(`closeClose sector length: ${r.length}`);
 
         seq.push(nextObj);
-        start = nextObj;
+        s = nextObj;
     }
 
-    if (seq[0] === undefined) {
-        seq.push(start)
-    }
+    //commented this out bc we put start as first index in seq by default
+    // if (seq[0] === undefined) {
+    //     seq.push(start)
+    // }
 
     return [seq, remain];
 
@@ -912,6 +921,9 @@ function getSolution(trks) {
                 //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
                 let ext = sequencedStops.indexOf(mostNorth);
                 sequencedStops.splice(ext, 1);
+                //this isnt impacting the sequencedStops array in the closeClose function... fix this and it seems like it might work!
+
+                console.log(`ext is: ${ext}`);
 
                 //variable to hold all the different solution sequences
                 //array or arrays... each index in the parent array is an array of loc objects sequenced as a psbl solution
@@ -927,7 +939,18 @@ function getSolution(trks) {
                 /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
                 //write abstraction for closest-closest???
 
+                //had bug here... when the ext loc was index zero, the following for loop wasnt running at all, resulting in undefined values
+                //have bug here... when ext more than one, we get undefined values...
+                //when y is 1 or more, for some reason, "remains" arg in the closeClose function holds zero elements... causing undefined values... might have fixed it by using the spread operator to copy the arrays in the closeClose() function before acting on them
                 for (let y = 0; y < ext; y++) {
+
+                    //scaffolding...
+                    console.log(`-------------------------`);
+                    console.log(`running time number: ${y}`);
+
+                    console.log(`seqStops:`);
+                    console.log(sequencedStops);
+                    //this scaffold shows that srquencedStops is empty on the second and subsequent interations through this... why???
 
                     //sequencing to the most extreme loc
                     seqOne = closeClose(locs[0], sequencedStops, y);
@@ -937,7 +960,60 @@ function getSolution(trks) {
                     //sequencing from the extreme loc to the end
                     seqTwo = closeClose(mostNorth, seqOne[1]);
 
-                    solCont.push([...seqOne[0], mostNorth, ...seqTwo[0]])
+                    /*
+                    //creating sequence array to push into the solution container array (solCont)...
+                    let sArr = seqOne.concat(mostNorth, seqTwo, locs[0])
+
+                    //scaffolding
+                    console.log(`seq arr next:`);
+                    console.log(sArr);
+
+                    solCont.push(sArr);
+                    */
+
+                    //pushing the sequenced array into the solution container
+                    solCont.push([...seqOne[0], ...seqTwo[0]])
+                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
+
+                    //scaffolding...
+                    console.log(`seqone follows this:`);
+                    console.log(seqOne[0]);
+
+                    console.log(`seqtwo follows this:`);
+                    console.log(seqTwo[0]);
+
+                    //scaffolding...
+                    console.log(`end running time number: ${y}`);
+                    console.log(`-------------------------`);
+
+
+                };
+
+                //may not need this... can psbly change the sign in abv for loop to <= to eliminate this...
+                if (ext === 0) {
+
+                    //sequencing to the most extreme loc
+                    seqOne = closeClose(locs[0], sequencedStops, 0);
+                    //returned array = [[sequenced objs], [remaining objs]]
+                    //for closeClose(locs[0], sequencedStops, 0)...returned array would be [[seq === empty array], [remain === orig array]]
+
+                    //sequencing from the extreme loc to the end
+                    seqTwo = closeClose(mostNorth, seqOne[1]);
+
+                    /*
+                    //creating sequence array to push into the solution container array (solCont)...
+                    let sArr = seqOne.concat(mostNorth, seqTwo, locs[0])
+
+                    //scaffolding
+                    console.log(`seq arr next:`);
+                    console.log(sArr);
+
+                    solCont.push(sArr);
+                    */
+
+                    //pushing the sequenced array into the solution container
+                    solCont.push([...seqOne[0], ...seqTwo[0]])
+                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
                     console.log(`seqone follows this:`);
@@ -947,7 +1023,6 @@ function getSolution(trks) {
                     console.log(seqTwo[0]);
 
                 };
-
 
 
                 //code below was orig code for seq extreme with close-close... incorrect as discussed abv...
@@ -980,7 +1055,7 @@ function getSolution(trks) {
                 */
                 //scaffolding... to show the solution container in each iteration (east and west)
                 console.log(`index of most extreme loc: ${ext}`);
-                console.log(`index number abv should match this number: ${(solCont.length - 1)}`);
+                console.log(`index number abv should match this number: ${(solCont.length)}`);
                 console.log(`solution container number ${u}: ${solCont}`);
                 console.log(`solCont[0] follows this:`);
                 console.log(solCont[0]);
