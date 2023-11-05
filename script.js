@@ -471,7 +471,11 @@ function closeClose(start, remain, nums) {
         start = nextObj;
     }
 
-    return [seq, remain]
+    if (seq[0] === undefined) {
+        seq.push(start)
+    }
+
+    return [seq, remain];
 
 };
 
@@ -863,8 +867,9 @@ function getSolution(trks) {
 
                 console.log(`west sector starting length: ${locsLeft.length}`);
 
+                //commented this out to avoid including the depot in the sequencing that follows...
                 //adding the depot as the first item in the sequence array
-                sequencedStops.push(locs[0]);
+                // sequencedStops.push(locs[0]);
 
                 //will need to add code here to find the directional extreme north in the locsleft array
                 //function here finds the most extreme loc and returns the associated loc object... variable here holds the extreme loc obj
@@ -897,8 +902,9 @@ function getSolution(trks) {
                 //to write function for this... need currObj (loc object from which we are routing to the next closest loc obj) and locsleft (array of loc objs remaining) args... also need first stop---first stop would be beginning currObj (where you want to start the closest-closest sequence)
                 //function would sequence closest-closest, returning an array of sequenced objs, which could then be combined with the spread operator before and after the extreme loc is added in???
 
+                //commented this out to avoid sequencing the depot in the sequencing that follows...
                 //adding the depot as the last item in the sequence array... sequencedStops holds loc objs
-                sequencedStops.push(locs[0]);
+                // sequencedStops.push(locs[0]);
 
                 /*--------------------------------------------------
                 ADDED CODE HERE TO SEQUENCE THE MOST EXTREME LOC
@@ -911,10 +917,42 @@ function getSolution(trks) {
                 //array or arrays... each index in the parent array is an array of loc objects sequenced as a psbl solution
                 let solCont = [];
 
+                //variable to hold sequence TO the most extreme loc
+                let seqOne;
+
+                //variable to hold the sequence FROM the most extreme loc to the end of the remaining locs to be sequenced
+                let seqTwo;
+
+
                 /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
                 //write abstraction for closest-closest???
 
+                for (let y = 0; y < ext; y++) {
+
+                    //sequencing to the most extreme loc
+                    seqOne = closeClose(locs[0], sequencedStops, y);
+                    //returned array = [[sequenced objs], [remaining objs]]
+                    //for closeClose(locs[0], sequencedStops, 0)...returned array would be [[seq === empty array], [remain === orig array]]
+
+                    //sequencing from the extreme loc to the end
+                    seqTwo = closeClose(mostNorth, seqOne[1]);
+
+                    solCont.push([...seqOne[0], mostNorth, ...seqTwo[0]])
+
+                    //scaffolding...
+                    console.log(`seqone follows this:`);
+                    console.log(seqOne[0]);
+
+                    console.log(`seqtwo follows this:`);
+                    console.log(seqTwo[0]);
+
+                };
+
+
+
+                //code below was orig code for seq extreme with close-close... incorrect as discussed abv...
                 /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... thinking array of solutions*/
+                /*
                 for (let y = 0; y < ext; y++) {
 
                     //variable to copy sequencedStops array so that we can reset the sequence to the orig sequencedStops array in each iteration of the for loop
@@ -937,13 +975,15 @@ function getSolution(trks) {
                     solCont.push(s);
 
                 }
+                
 
+                */
                 //scaffolding... to show the solution container in each iteration (east and west)
                 console.log(`index of most extreme loc: ${ext}`);
                 console.log(`index number abv should match this number: ${(solCont.length - 1)}`);
                 console.log(`solution container number ${u}: ${solCont}`);
-                console.log(`solCont[3] follows this:`);
-                console.log(solCont[3]);
+                console.log(`solCont[0] follows this:`);
+                console.log(solCont[0]);
 
                 /*--------------------------------------------------
                 END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
