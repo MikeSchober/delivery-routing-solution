@@ -1,12 +1,10 @@
 'use strict';
 
-//start at CL 922 to work on the sequencedStops array and make sure that the spliced version impacts closeClose function!!!
 
-//start at code line 850 and 981 to add sequencing for the extreme points into the srequencedStops array!!!
-///start at code line 853... troubleshoot the sequences!!!
-//---right now, the most extreme points are spliced out of the sequencedStops array for both WE and NS solutions... need to run sequences for them for them in index zero through their natural index in the closest-closest solution, storing each in its own solution array, then need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array
-//-----next steps...
-//-----write logic to sequence the extreme loc and to hold all the different solutions (array to hold all solutions??? array or arrays, each index of the parent array would hold an array of the sequenced loc objects)
+//---right now, the most extreme points are spliced out of the sequencedStops array for both WE and NS solutions... need to run sequences for them for them in index zero through their natural index in the closest-closest solution, storing each in its own solution array---done
+//next step after 11/5/23...
+//-----write logic to sequence the extreme loc and to hold all the different solutions (array to hold all solutions array or arrays, each index of the parent array would hold an array of the sequenced loc objects)---done!!!
+//need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array
 //write logic to determine total distance along a given route (can use getDist(origin, destination) for each segment of each solution to get the total distance)... remember, getDist takes arrays as args ([lat, long], [lat, long]) so need to take the locObj.loc and pass it in as arg
 //-----will likely need to create an array of total distances that correspond to the solutions parent array (index0 of distance array woudl be total distance for the solutions parent array index 0, etc.)
 //write logic to compare all solutions and to draw/pass-in the solution the solutionOne map (index of the lowest number in the solutions distance array SHOULD be the best solution)
@@ -935,12 +933,7 @@ function getSolution(trks) {
                 let seqTwo;
 
 
-                /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
-                //write abstraction for closest-closest???
-
-                //had bug here... when the ext loc was index zero, the following for loop wasnt running at all, resulting in undefined values
-                //have bug here... when ext more than one, we get undefined values...
-                //when y is 1 or more, for some reason, "remains" arg in the closeClose function holds zero elements... causing undefined values... might have fixed it by using the spread operator to copy the arrays in the closeClose() function before acting on them
+                /*sequencing the extreme loc, running closest-closest both before and after it*/
                 for (let y = 0; y < ext; y++) {
 
                     //scaffolding...
@@ -972,7 +965,6 @@ function getSolution(trks) {
 
                     //pushing the sequenced array into the solution container
                     solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
-                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
                     console.log(`seqone follows this:`);
@@ -988,7 +980,7 @@ function getSolution(trks) {
 
                 };
 
-                //may not need this... can psbly change the sign in abv for loop to <= to eliminate this...
+                //may not need this... leaving it for now. this code block executes when the index of the most extreme point is zero (when the most extreme point (w or N) happens to also be the closest point to the depot in the closest-closest sequencing... not common)
                 if (ext === 0) {
 
                     //sequencing to the most extreme loc
@@ -1012,7 +1004,6 @@ function getSolution(trks) {
 
                     //pushing the sequenced array into the solution container
                     solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
-                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
                     console.log(`seqone follows this:`);
@@ -1208,12 +1199,7 @@ function getSolution(trks) {
                 let seqTwo;
 
 
-                /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
-                //write abstraction for closest-closest???
-
-                //had bug here... when the ext loc was index zero, the following for loop wasnt running at all, resulting in undefined values
-                //have bug here... when ext more than one, we get undefined values...
-                //when y is 1 or more, for some reason, "remains" arg in the closeClose function holds zero elements... causing undefined values... might have fixed it by using the spread operator to copy the arrays in the closeClose() function before acting on them
+                /*sequencing the extreme loc, running closest-closest both before and after it*/
                 for (let y = 0; y < ext; y++) {
 
                     //scaffolding...
@@ -1251,7 +1237,7 @@ function getSolution(trks) {
 
                 };
 
-                //may not need this... can psbly change the sign in abv for loop to <= to eliminate this...
+                //may not need this... leaving it for now. this code block executes when the index of the most extreme point is zero (when the most extreme point (w or N) happens to also be the closest point to the depot in the closest-closest sequencing... not common)
                 if (ext === 0) {
 
                     //sequencing to the most extreme loc
@@ -1265,7 +1251,6 @@ function getSolution(trks) {
 
                     //pushing the sequenced array into the solution container
                     solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
-                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
                     console.log(`seqone follows this:`);
