@@ -1153,7 +1153,7 @@ function getSolution(trks) {
                 console.log(`north sector starting length: ${locsLeft.length}`);
 
                 //adding the depot as the first item in the sequence array
-                sequencedStops.push(locs[0]);
+                // sequencedStops.push(locs[0]);
 
 
                 //will need to add code here to find the directional extreme west in the locsleft array
@@ -1184,20 +1184,122 @@ function getSolution(trks) {
                 };
 
                 //adding the depot as the last item in the sequence array
-                sequencedStops.push(locs[0]);
+                // sequencedStops.push(locs[0]);
 
 
+
+                /*--------------------------------------------------
+                ADDED CODE HERE TO SEQUENCE THE MOST EXTREME LOC
+                */
                 //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
                 let ext = sequencedStops.indexOf(mostWest);
                 sequencedStops.splice(ext, 1);
+
+                console.log(`ext is: ${ext}`);
+
+                //variable to hold all the different solution sequences
+                //array or arrays... each index in the parent array is an array of loc objects sequenced as a psbl solution
+                let solCont = [];
+
+                //variable to hold sequence TO the most extreme loc
+                let seqOne;
+
+                //variable to hold the sequence FROM the most extreme loc to the end of the remaining locs to be sequenced
+                let seqTwo;
+
+
+                /*the following is incorrect in that it just inserts the extreme loc into the closest-closest sequence, at positions zero through its natural index, without sequencing closest-closest both before an after the extreme loc... this just results in inefficient routing. need to sequence the extreme loc, running closest-closest both before and after it*/
+                //write abstraction for closest-closest???
+
+                //had bug here... when the ext loc was index zero, the following for loop wasnt running at all, resulting in undefined values
+                //have bug here... when ext more than one, we get undefined values...
+                //when y is 1 or more, for some reason, "remains" arg in the closeClose function holds zero elements... causing undefined values... might have fixed it by using the spread operator to copy the arrays in the closeClose() function before acting on them
+                for (let y = 0; y < ext; y++) {
+
+                    //scaffolding...
+                    console.log(`-------------------------`);
+                    console.log(`running time number: ${y}`);
+
+                    console.log(`seqStops:`);
+                    console.log(sequencedStops);
+                    //this scaffold shows that srquencedStops is empty on the second and subsequent interations through this... why???---fixed
+
+                    //sequencing to the most extreme loc
+                    seqOne = closeClose(locs[0], sequencedStops, y);
+                    //returned array = [[sequenced objs], [remaining objs]]
+                    //for closeClose(locs[0], sequencedStops, 0)...returned array would be [[seq === empty array], [remain === orig array]]
+
+                    //sequencing from the extreme loc to the end
+                    seqTwo = closeClose(mostWest, seqOne[1]);
+
+
+                    //pushing the sequenced array into the solution container
+                    solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
+                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
+
+                    //scaffolding...
+                    console.log(`seqone follows this:`);
+                    console.log(seqOne[0]);
+
+                    console.log(`seqtwo follows this:`);
+                    console.log(seqTwo[0]);
+
+                    //scaffolding...
+                    console.log(`end running time number: ${y}`);
+                    console.log(`-------------------------`);
+
+
+                };
+
+                //may not need this... can psbly change the sign in abv for loop to <= to eliminate this...
+                if (ext === 0) {
+
+                    //sequencing to the most extreme loc
+                    seqOne = closeClose(locs[0], sequencedStops, 0);
+                    //returned array = [[sequenced objs], [remaining objs]]
+                    //for closeClose(locs[0], sequencedStops, 0)...returned array would be [[seq === empty array], [remain === orig array]]
+
+                    //sequencing from the extreme loc to the end
+                    seqTwo = closeClose(mostWest, seqOne[1]);
+
+
+                    //pushing the sequenced array into the solution container
+                    solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
+                    //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
+
+                    //scaffolding...
+                    console.log(`seqone follows this:`);
+                    console.log(seqOne[0]);
+
+                    console.log(`seqtwo follows this:`);
+                    console.log(seqTwo[0]);
+
+                };
+
+
+
+
+                //scaffolding... to show the solution container in each iteration (east and west)
+                console.log(`index of most extreme loc: ${ext}`);
+                console.log(`index number abv should match this number: ${(solCont.length)}`);
+                console.log(`solution container number ${u}: ${solCont}`);
+                console.log(`solCont[0] follows this:`);
+                console.log(solCont[0]);
+
+                /*--------------------------------------------------
+                END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
+                */
+
+
+
 
                 /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... map???*/
 
 
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
-                for (let l in sequencedStops) {
+                for (let l in solCont[0]) {
 
-                    sequencedLocations.push(sequencedStops[l].loc)
+                    sequencedLocations.push(solCont[0][l].loc)
 
                 };
 
