@@ -484,7 +484,7 @@ function closeClose(start, remain, nums) {
     //     seq.push(start)
     // }
 
-    return [seq, remain];
+    return [seq, r];
 
 };
 
@@ -921,7 +921,6 @@ function getSolution(trks) {
                 //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
                 let ext = sequencedStops.indexOf(mostNorth);
                 sequencedStops.splice(ext, 1);
-                //this isnt impacting the sequencedStops array in the closeClose function... fix this and it seems like it might work!
 
                 console.log(`ext is: ${ext}`);
 
@@ -972,7 +971,7 @@ function getSolution(trks) {
                     */
 
                     //pushing the sequenced array into the solution container
-                    solCont.push([...seqOne[0], ...seqTwo[0]])
+                    solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
                     //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
@@ -1012,7 +1011,7 @@ function getSolution(trks) {
                     */
 
                     //pushing the sequenced array into the solution container
-                    solCont.push([...seqOne[0], ...seqTwo[0]])
+                    solCont.push([...seqOne[0], ...seqTwo[0], locs[0]]);
                     //need to add locs[0] to end of this... didnt do it now bc didnt want to break code somehow...
 
                     //scaffolding...
