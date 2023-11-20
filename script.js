@@ -1671,7 +1671,7 @@ function getCurrLocation() {
 
 
 
-/*--the map in this program is from Leaflet JS, the amazing open source map library. It is licensed as written below:
+/*--the map interaction in this program is from Leaflet JS, the amazing open source map interaction library. It is licensed as written below:
     
     BSD 2-Clause License
 
@@ -1700,6 +1700,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
+
+
+/*the map graphics themselves are from OpenStreetMap, the amazing open source map utility!
+
+Their copyright notice can be found at:
+
+https://www.openstreetmap.org/copyright
+
+
+*/
 
 
 /* Copyright (c) 2023 by Mike Schober */
