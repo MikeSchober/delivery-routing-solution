@@ -4,10 +4,10 @@
 //---right now, the most extreme points are spliced out of the sequencedStops array for both WE and NS solutions... need to run sequences for them for them in index zero through their natural index in the closest-closest solution, storing each in its own solution array---done
 //next step after 11/5/23...
 //-----write logic to sequence the extreme loc and to hold all the different solutions (array to hold all solutions array or arrays, each index of the parent array would hold an array of the sequenced loc objects)---done!!!
-//need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array
-//write logic to determine total distance along a given route (can use getDist(origin, destination) for each segment of each solution to get the total distance)... remember, getDist takes arrays as args ([lat, long], [lat, long]) so need to take the locObj.loc and pass it in as arg
+//need to compare all the soluation arrays for total distance measurement to determine the best solution to pass-in to the solutionOne array---done!!!
+//write logic to determine total distance along a given route (can use getDist(origin, destination) for each segment of each solution to get the total distance)... remember, getDist takes arrays as args ([lat, long], [lat, long]) so need to take the locObj.loc and pass it in as arg---done!!!!
 //-----will likely need to create an array of total distances that correspond to the solutions parent array (index0 of distance array woudl be total distance for the solutions parent array index 0, etc.)
-//write logic to compare all solutions and to draw/pass-in the solution the solutionOne map (index of the lowest number in the solutions distance array SHOULD be the best solution)
+//write logic to compare all solutions and to draw/pass-in the solution the solutionOne map (index of the lowest number in the solutions distance array SHOULD be the best solution)---done!!!
 
 //global variable to hold user's current position
 //defaults to KC, MO
@@ -493,6 +493,36 @@ function closeClose(start, remain, nums) {
 ////////////////////////
 
 
+//function that determines total route distance
+//takes array of location arrays [[lat, long], [lat, long]]
+//returns the distance in SM as a number
+function totalDist(arr) {
+
+    //variable to hold the length of the array passed-in
+    let l = arr.length;
+
+    console.log(`arr length is ${l}`);
+
+    //variable to hold the total distance
+    let d = 0;
+
+    for (let x = 0; x < (l - 1); x++) {
+
+        //adds calculated distance to the running total (d)
+        d = d + getDist(arr[x], arr[x + 1]);
+
+
+        console.log(`total dist is now: ${d}`);
+
+
+    }
+
+    //returns total distance in SM as a number
+    return d;
+
+};
+
+
 
 ///////
 
@@ -878,7 +908,6 @@ function getSolution(trks) {
                 //adding the depot as the first item in the sequence array
                 // sequencedStops.push(locs[0]);
 
-                //will need to add code here to find the directional extreme north in the locsleft array
                 //function here finds the most extreme loc and returns the associated loc object... variable here holds the extreme loc obj
                 let mostNorth = extNorth(locsLeft);
 
@@ -916,7 +945,7 @@ function getSolution(trks) {
                 /*--------------------------------------------------
                 ADDED CODE HERE TO SEQUENCE THE MOST EXTREME LOC
                 */
-                //code here adds finds the index of the most extreme west loc in the sequence, then removes it from the sequencedStops sequence with splice
+                //code here adds finds the index of the most extreme north loc in the sequence, then removes it from the sequencedStops sequence with splice
                 let ext = sequencedStops.indexOf(mostNorth);
                 sequencedStops.splice(ext, 1);
 
@@ -1054,19 +1083,62 @@ function getSolution(trks) {
                 END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
                 */
 
+                //at this point in the code, solCont is an array that holds all iterations of the extreme loc sequencing
+                //need to write our function to determine total route distance, use it here, and then only print to the map the route with the shortest distance
+
+                //variable to hold array of distances for each solution in solCont
+                let distTotals = [];
+
+                //looping over the array of routing solutions (solCont... which contains loc objects), extracting only the loc coordinates from each for use with totalDist(), then determining the total distance for each solution in solCont (adding each to array, with distance that corresponds to its matching solution in solCont)
+                for (let s of solCont) {
+
+                    //temp variable to hold [[lat, long]] coords of current solution
+                    let tempCoords = [];
+
+                    //extracting only the loc coordinates for each solution...
+                    for (let pl of s) {
+
+                        tempCoords.push(pl.loc)
+
+                        console.log(`iteration through loc: ${pl}`);
+
+                    };
+
+                    console.log(`iteration through solution ${s}`);
+
+                    console.log(`temp coords:`);
+                    console.log(tempCoords);
+
+                    distTotals.push(totalDist(tempCoords));
+
+                };
+
+                console.log(`completed dist totals:`);
+                console.log(distTotals);
+
+                //variable to hold index of shortest distance solution
+                let short = distTotals.indexOf(findLowest(distTotals));
+                //bc this corresponds the to solution's index in solCont, we should be able to plug this in as an the index of solCont to be drawn below...
+                console.log(`short!`);
+                console.log(short);
+
+                console.log(`shortest solution!`);
+                console.log(solCont[short]);
+
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
                 //changed this to currently only draw the first solution in the solCont sequence array. this code is changing anyway bc the routing is incorrect
-                for (let l in solCont[0]) {
+                for (let l in solCont[short]) {
 
-                    sequencedLocations.push(solCont[0][l].loc)
+                    sequencedLocations.push(solCont[short][l].loc)
 
                 };
 
                 //now have both sequencedStops and sequencedLocations populated
                 //add truck one sequence to the solutionOne map
                 //first key is truck number (number data type), value is array of sequenced locations [lat, long] for printing to the UI map view
-                //second key is truck number in string form, value is array of sequenced loc objects
-                solutionOne.set(u, sequencedLocations).set(`truck${u}`, sequencedStops);
+                //second key is truck number in string form (starts at zero), value is array of sequenced loc objects
+                solutionOne.set(u, sequencedLocations).set(`truck${u}`, solCont[short]);
+                //this needs to be solCont[short] instead ot sequencedstops!!!
 
                 //code to add the sequence to the map
                 let polyline = L.polyline(sequencedLocations, { color: clr[u] }).addTo(map);
@@ -1275,24 +1347,63 @@ function getSolution(trks) {
                 END OF ADDED CODE TO SEQUENCE THE MOST EXTREME LOC
                 */
 
+                //at this point in the code, solCont is an array that holds all iterations of the extreme loc sequencing
+                //need to write our function to determine total route distance, use it here, and then only print to the map the route with the shortest distance
 
+                //variable to hold array of distances for each solution in solCont
+                let distTotals = [];
 
+                //looping over the array of routing solutions (solCont... which contains loc objects), extracting only the loc coordinates from each for use with totalDist(), then determining the total distance for each solution in solCont (adding each to array, with distance that corresponds to its matching solution in solCont)
+                for (let s of solCont) {
 
-                /*then will need to run sequences with the extreme index at index zero through its natural index in the closest-closest sequence, saving each somehow... map???*/
+                    //temp variable to hold [[lat, long]] coords of current solution
+                    let tempCoords = [];
 
+                    //extracting only the loc coordinates for each solution...
+                    for (let pl of s) {
+
+                        tempCoords.push(pl.loc)
+
+                        console.log(`iteration through loc: ${pl}`);
+
+                    };
+
+                    console.log(`iteration through solution ${s}`);
+
+                    console.log(`temp coords:`);
+                    console.log(tempCoords);
+
+                    distTotals.push(totalDist(tempCoords));
+
+                };
+
+                console.log(`completed dist totals:`);
+                console.log(distTotals);
+
+                //variable to hold index of shortest distance solution
+                let short = distTotals.indexOf(findLowest(distTotals));
+                //bc this corresponds the to solution's index in solCont, we should be able to plug this in as an the index of solCont to be drawn below...
+                console.log(`short!`);
+                console.log(short);
+
+                console.log(`shortest solution!`);
+                console.log(solCont[short]);
 
                 //code to iterate through sequencedStops and to populate the sequencedLocations array (array that holds ONLY the location [lat, long])
-                for (let l in solCont[0]) {
+                //changed this to currently only draw the first solution in the solCont sequence array. this code is changing anyway bc the routing is incorrect
+                for (let l in solCont[short]) {
 
-                    sequencedLocations.push(solCont[0][l].loc)
+                    sequencedLocations.push(solCont[short][l].loc)
 
                 };
 
                 //now have both sequencedStops and sequencedLocations populated
                 //add truck one sequence to the solutionOne map
                 //first key is truck number (number data type), value is array of sequenced locations [lat, long] for printing to the UI map view
-                //second key is truck number in string form, value is array of sequenced loc objects
-                solutionOne.set(u, sequencedLocations).set(`truck${u}`, sequencedStops);
+                //second key is truck number in string form (starts at zero), value is array of sequenced loc objects
+                solutionOne.set(u, sequencedLocations).set(`truck${u}`, solCont[short]);
+                //this needs to be solCont[short] instead ot sequencedstops!!!
+
 
                 //code to add the sequence to the map
                 let polyline = L.polyline(sequencedLocations, { color: clr[u] }).addTo(map);
