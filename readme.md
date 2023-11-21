@@ -1,5 +1,5 @@
 
-## JavaScript Delivery Routing Solution
+## Delivery Routing Solution
 
 This is a web-based logistics optimization application. 
 
