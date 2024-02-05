@@ -17,7 +17,7 @@ At the moment, the logic behind this program considers the great circle distance
 All of the data processing and calculation logic is written in JavaScript (no external libraries or frameworks) and it uses Leaflet JS for map interaction, with OpenStreetMap map graphics.
 
 ## Screenshot
-![output screenshot](https://github.com/Runningman47/delivery-routing-solution/blob/main/screenshot1.jpg)
+![output screenshot](https://github.com/MikeSchober/delivery-routing-solution/blob/main/screenshot1.jpg)
 
 This screenshot shows the routing solution output. A two truck solution is displayed and the colored routes represent each truck's individual route assignment. The building icon in the center of the map is the user-selected delivery depot, and the arrows represent the user-selected stops.
 
