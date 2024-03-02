@@ -22,7 +22,7 @@ All of the data processing and calculation logic is written in JavaScript (no ex
 This screenshot shows the routing solution output. A two truck solution is displayed and the colored routes represent each truck's individual route assignment. The building icon in the center of the map is the user-selected delivery depot, and the arrows represent the user-selected stops.
 
 ## Updates
-I have many ideas for further development of this application, however, I am most interested in exploring machine learning as it could apply this application's route optimization. I am slowly working through an online class in machine learning in Python and I am hoping to apply these concepts in the future development of this app.
+This is version zero of the app, as the logic has not been developed to calculate solutions for more than two available trucks. In its current state, there is no option for the user to select the number of trucks available and, as such, the logic assumes two trucks. If I decide to continue development of this app in the future, the code will need to be refactored and the user interface will need to be fully developed and styled. I have many ideas for further development of this application, however, I am most interested in exploring machine learning as it could apply this application's route optimization. I am, at the moment, focusing on JavaScript as my learning priority, but I hope to come back this in the future.
 
 ## Licensing
 The map interaction in this program was developed with Leaflet JS, the amazing open source map functionality library. It is licensed under the BSD 2-Clause License. Their license can be found in the accompanying "LICENSE" file in this repo.
